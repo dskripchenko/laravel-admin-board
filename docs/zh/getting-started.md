@@ -48,6 +48,7 @@ php artisan vendor:publish --tag=admin-board-config
 | `limits.max_objects` | 10 000 | 每块白板的对象数 |
 | `keep` | 10 000 | 每块白板为重新连接的客户端保留的批次数 |
 | `poll_limit` | 1 000 | 一次轮询响应中的批次数 |
+| `throttle` | 1800,1 | 白板路由自己的请求限额（请求数,分钟），与 `admin.api.throttle` 分开；null 表示关闭 |
 | `presence.ttl` | 30 | 客户端在在线列表中保留的秒数 |
 | `presence.store` | null | 在线状态使用的缓存存储（null 为默认存储） |
 | `poll_interval` | 1500 | 无实时连接时的轮询间隔（毫秒） |

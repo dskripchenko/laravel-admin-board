@@ -156,6 +156,9 @@ outage does not fail a change: it is stored, and clients catch up by polling.
 ## Limits and load
 
 Without realtime each open board polls every `poll_interval` ms and reports
-presence; both count against the panel API's throttle
-(`admin.api.throttle`, 240 a minute by default). The poll is a single indexed
+presence. The board routes have a request limit of their own,
+`admin-board.throttle` (1800 a minute per user by default), counted apart
+from the panel API's `admin.api.throttle` — cursor reports, up to ten a
+second, would spend the panel's limit and leave the rest of the panel
+answering 429. The poll is a single indexed
 query; long polling is not used, since it would hold PHP workers.

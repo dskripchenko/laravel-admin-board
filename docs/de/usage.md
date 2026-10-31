@@ -166,7 +166,10 @@ holen per Abfrage auf.
 ## Limits und Last
 
 Ohne Realtime fragt jedes offene Board alle `poll_interval` ms ab und meldet
-seine Anwesenheit; beides zählt gegen das Throttle der Panel-API
-(`admin.api.throttle`, standardmäßig 240 pro Minute). Eine Abfrage ist eine
+seine Anwesenheit. Die Board-Routen haben ein eigenes Anfragelimit,
+`admin-board.throttle` (standardmäßig 1800 pro Minute und Benutzer), das
+getrennt vom `admin.api.throttle` der Panel-API gezählt wird — die
+Cursor-Meldungen, bis zu zehn pro Sekunde, würden das Limit des Panels
+aufbrauchen, und der Rest des Panels bekäme 429. Eine Abfrage ist eine
 einzige indizierte Query; Long Polling wird nicht verwendet, weil es
 PHP-Worker blockieren würde.

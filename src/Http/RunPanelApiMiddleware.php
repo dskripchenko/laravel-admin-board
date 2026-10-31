@@ -9,6 +9,7 @@ use Dskripchenko\LaravelAdmin\Panel\Panels;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Router;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,6 +22,12 @@ use Symfony\Component\HttpFoundation\Response;
  * group the routes share with the core's endpoints; the core's
  * RunActionMiddleware adds the API class's global middleware only for URLs
  * of the `{controller}/{action}` shape, which `/boards/{id}/{action}` is not.
+ *
+ * The panel's request limit is the exception: it is shared by everything a
+ * user does in the panel, and a board open in a tab reports the cursor up to
+ * ten times a second and polls — it would spend the panel's limit in a minute
+ * and leave the rest of the panel answering 429. The board routes take a
+ * limit of their own instead, `admin-board.throttle`, counted apart.
  */
 final class RunPanelApiMiddleware
 {
@@ -32,6 +39,11 @@ final class RunPanelApiMiddleware
         $methods = method_exists($apiClass, 'getPreparedMethods') ? (array) $apiClass::getPreparedMethods() : [];
         /** @var array<int, string> $stack */
         $stack = array_values(array_filter((array) ($methods['middleware'] ?? []), 'is_string'));
+        $stack = array_values(array_filter($stack, static fn (string $m): bool => ! self::isThrottle($m)));
+        $limit = config('admin-board.throttle', '1800,1');
+        if (is_string($limit) && $limit !== '') {
+            $stack[] = ThrottleRequests::class.':'.$limit.',admin-board-'.Panels::current()->id;
+        }
         $stack = $this->router->resolveMiddleware($stack);
 
         if ($stack === []) {
@@ -48,5 +60,13 @@ final class RunPanelApiMiddleware
             ->then(static fn (Request $req): Response => $next($req));
 
         return $response;
+    }
+
+    /** A request limit: `throttle:…` or ThrottleRequests (or a subclass) with its parameters. */
+    private static function isThrottle(string $middleware): bool
+    {
+        $name = explode(':', $middleware, 2)[0];
+
+        return $name === 'throttle' || is_a($name, ThrottleRequests::class, true);
     }
 }

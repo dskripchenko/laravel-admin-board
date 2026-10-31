@@ -6,6 +6,17 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-01
+
+### Fixed
+- **The board routes no longer spend the panel's request limit.** A board
+  open in a tab reports the cursor up to ten times a second and polls; with
+  the panel's `admin.api.throttle` (240 a minute per user, shared by the
+  whole panel) that left the rest of the panel answering 429 within a
+  minute. The board routes now drop the panel's limit and take their own,
+  `admin-board.throttle` (`'1800,1'` by default, counted apart; null turns
+  it off).
+
 ## [1.0.0] - 2026-11-01
 
 ### Added
