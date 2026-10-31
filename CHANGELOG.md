@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-01
+
 ### Added
 - **Boards**: tables `admin_boards` (the snapshot, the number of the last
   batch, the lock, an optional owner record) and `admin_board_batches` (the log

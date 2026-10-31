@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Dskripchenko\LaravelAdminBoard\Support;
 
+use Dskripchenko\LaravelAdmin\Layout\Board as CoreBoard;
 use Dskripchenko\LaravelAdmin\Layout\Layout;
 use Dskripchenko\LaravelAdmin\Panel\Panels;
 use Dskripchenko\LaravelAdminBoard\Access\BoardAccess;
 use Dskripchenko\LaravelAdminBoard\Models\Board;
 use Dskripchenko\LaravelAdminBoard\Realtime\BoardRealtime;
 use Illuminate\Support\Facades\Auth;
-use ReflectionMethod;
 
 /**
  * The board on a screen: the core's `Layout::board()` with the props of the
- * contract, or — on a core without it — {@see FallbackBoardLayout} with the
- * same type and props.
+ * contract — the board's endpoint, the user, the realtime channel, whether
+ * they may edit.
  *
  *     public function layout(): array
  *     {
@@ -25,13 +25,22 @@ use ReflectionMethod;
 final class BoardLayout
 {
     /** The core's layout class, once it ships. */
-    public const CORE_LAYOUT = 'Dskripchenko\\LaravelAdmin\\Layout\\Board';
-
-    public static function for(Board $board, ?object $user = null, ?string $title = null, int|string|null $height = null): Layout
+    public static function for(Board $board, ?object $user = null, ?string $title = null, int|string|null $height = null): CoreBoard
     {
         $props = self::props($board, $user, $title, $height);
 
-        return self::coreLayout($props) ?? new FallbackBoardLayout($props);
+        $layout = Layout::board()
+            ->endpoint($props['endpoint'])
+            ->readonly($props['readonly'])
+            ->user($props['user'])
+            ->realtime($props['realtime'])
+            ->pollInterval($props['pollInterval'])
+            ->height($props['height']);
+        if ($props['title'] !== null && $props['title'] !== '') {
+            $layout->title($props['title']);
+        }
+
+        return $layout;
     }
 
     /**
@@ -62,32 +71,6 @@ final class BoardLayout
     public static function endpoint(Board $board): string
     {
         return '/boards/'.$board->getKey();
-    }
-
-    /**
-     * @param  array<string, mixed>  $props
-     */
-    private static function coreLayout(array $props): ?Layout
-    {
-        if (! class_exists(self::CORE_LAYOUT) || ! method_exists(Layout::class, 'board')) {
-            return null;
-        }
-        $factory = new ReflectionMethod(Layout::class, 'board');
-        $layout = match ($factory->getNumberOfRequiredParameters()) {
-            0 => $factory->invoke(null),
-            1 => $factory->invoke(null, $props['endpoint']),
-            default => null,
-        };
-        if (! $layout instanceof Layout) {
-            return null;
-        }
-        foreach (['endpoint', 'readonly', 'user', 'realtime', 'pollInterval', 'title', 'height'] as $setter) {
-            if (method_exists($layout, $setter) && ($props[$setter] !== null || $setter === 'realtime')) {
-                $layout->{$setter}($props[$setter]);
-            }
-        }
-
-        return $layout;
     }
 
     private static function currentUser(): ?object

@@ -11,7 +11,6 @@ use Dskripchenko\LaravelAdminBoard\Permissions;
 use Dskripchenko\LaravelAdminBoard\Resources\BoardResource;
 use Dskripchenko\LaravelAdminBoard\Support\BoardLayout;
 use Dskripchenko\LaravelAdminBoard\Support\BoardUser;
-use Dskripchenko\LaravelAdminBoard\Support\FallbackBoardLayout;
 use Dskripchenko\LaravelAdminBoard\Tests\TestCase;
 use Dskripchenko\LaravelAdminBoard\Widgets\BoardWidget;
 
@@ -47,7 +46,7 @@ final class PanelIntegrationTest extends TestCase
         $layout = BoardLayout::for($board);
         $array = $layout->toArray();
 
-        $this->assertInstanceOf(FallbackBoardLayout::class, $layout, 'core 1.68 has no Layout\Board yet');
+        $this->assertInstanceOf(\Dskripchenko\LaravelAdmin\Layout\Board::class, $layout);
         $this->assertSame('board', $array['type']);
         $this->assertSame('/boards/'.$board->id, $array['endpoint']);
         $this->assertFalse($array['readonly']);
@@ -56,7 +55,6 @@ final class PanelIntegrationTest extends TestCase
         $this->assertSame(1500, $array['pollInterval']);
         $this->assertSame('Retro', $array['title']);
         $this->assertSame('640px', $array['height']);
-        $this->assertSame($array['endpoint'], $array['props']['endpoint']);
     }
 
     public function test_the_colour_is_stable_per_user(): void

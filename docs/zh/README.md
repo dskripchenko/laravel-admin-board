@@ -49,7 +49,7 @@ php artisan migrate
 
 ## 要求
 
-PHP 8.2–8.5，Laravel 11 / 12 / 13，`dskripchenko/laravel-admin` ^1.68。
+PHP 8.2–8.5，Laravel 11 / 12 / 13，`dskripchenko/laravel-admin` ^1.69。
 可选：`dskripchenko/laravel-realtime`。
 
 ## 许可证
