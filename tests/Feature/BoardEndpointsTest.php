@@ -25,18 +25,31 @@ final class BoardEndpointsTest extends TestCase
         }
     }
 
-    public function test_the_panel_api_middleware_runs_on_the_board_routes(): void
+    public function test_the_board_routes_take_their_own_request_limit_instead_of_the_panels(): void
     {
-        // The throttle of AdminApi::getMethods()['middleware'] — the stack a
-        // panel's layer middleware also comes through.
-        config(['admin.api.throttle' => '2,1']);
+        // The panel's limit, AdminApi::getMethods()['middleware'], is shared by
+        // the whole panel: a board's cursor reports would spend it.
+        config(['admin.api.throttle' => '2,1', 'admin-board.throttle' => '4,1']);
         \Dskripchenko\LaravelAdmin\Http\AdminApi::clearCache();
         $this->actingAsAdmin(permissions: [Permissions::VIEW]);
         $board = $this->makeBoard();
 
-        $this->boardApi($board, 'snapshot')->assertOk();
-        $this->boardApi($board, 'snapshot')->assertOk();
+        for ($i = 0; $i < 4; $i++) {
+            $this->boardApi($board, 'presence', ['client' => 'a'])->assertOk();
+        }
         $this->boardApi($board, 'snapshot')->assertStatus(429);
+    }
+
+    public function test_the_board_request_limit_can_be_turned_off(): void
+    {
+        config(['admin.api.throttle' => '1,1', 'admin-board.throttle' => null]);
+        \Dskripchenko\LaravelAdmin\Http\AdminApi::clearCache();
+        $this->actingAsAdmin(permissions: [Permissions::VIEW]);
+        $board = $this->makeBoard();
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->boardApi($board, 'snapshot')->assertOk();
+        }
     }
 
     public function test_a_guest_gets_401_everywhere(): void

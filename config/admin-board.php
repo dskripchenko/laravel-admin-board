@@ -30,6 +30,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Request limit
+    |--------------------------------------------------------------------------
+    | The board routes' own limit, per user, in place of the panel's
+    | (`admin.api.throttle`), which they would spend: a board open in a tab
+    | reports the cursor up to 10 times a second and polls. Laravel's
+    | `throttle` parameters — 'requests,minutes'; null turns it off.
+    */
+    'throttle' => '1800,1',
+
+    /*
+    |--------------------------------------------------------------------------
     | Presence
     |--------------------------------------------------------------------------
     | Seconds a client stays in the presence list after its last report. Kept

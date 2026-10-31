@@ -51,6 +51,7 @@ php artisan vendor:publish --tag=admin-board-config
 | `limits.max_objects` | 10 000 | Objekte pro Board |
 | `keep` | 10 000 | pro Board aufbewahrte Batches für zurückkehrende Clients |
 | `poll_limit` | 1 000 | Batches in einer Poll-Antwort |
+| `throttle` | 1800,1 | eigenes Anfragelimit der Board-Routen (Anfragen,Minuten), getrennt von `admin.api.throttle`; null schaltet es ab |
 | `presence.ttl` | 30 | Sekunden, die ein Client in der Anwesenheitsliste bleibt |
 | `presence.store` | null | der Cache-Store für die Anwesenheit (null — der Standard) |
 | `poll_interval` | 1500 | ms zwischen Abfragen ohne Realtime |
