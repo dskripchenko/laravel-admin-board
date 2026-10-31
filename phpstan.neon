@@ -1,0 +1,10 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+    ignoreErrors:
+        # HasBoard is for the host's models: nothing in src uses it (tests do).
+        - identifier: trait.unused

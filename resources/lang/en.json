@@ -1,0 +1,18 @@
+{
+    "Доска": "Board",
+    "доска": "board",
+    "Доски": "Boards",
+    "Доска не найдена": "Board not found",
+    "Доска не найдена. Откройте её из списка досок.": "Board not found. Open it from the list of boards.",
+    "Доски: переименование": "Boards: rename",
+    "Доски: просмотр": "Boards: view",
+    "Доски: рисование на доске": "Boards: draw on a board",
+    "Доски: создание": "Boards: create",
+    "Доски: удаление": "Boards: delete",
+    "Заблокирована": "Locked",
+    "Изменена": "Changed",
+    "Изменений": "Changes",
+    "Название": "Title",
+    "Нет доступа к доске": "No access to the board",
+    "Нет права изменять доску": "No right to change the board"
+}
